@@ -31,7 +31,7 @@ module CarrierWave
           init
         end
 
-        def store(file, key)
+        def store(file, key, uploader)
           overwrite_file = nil
           overwrite_file = key if @qiniu_can_overwrite
 
@@ -47,9 +47,9 @@ module CarrierWave
           put_policy.persistent_notify_url = @qiniu_persistent_notify_url if @qiniu_persistent_notify_url.present?
 
           uptoken = ::Qiniu::Auth.generate_uptoken(put_policy)
-          qiniu_x_vars = {"x:document_id": file.model.id}
+          qiniu_x_vars = {"x:document_id": uploader.model_id}
           qiniu_x_vars.merge!(@qiniu_x_vars)
-
+          
           resp_code, resp_body, response_headers = ::Qiniu::Storage.upload_with_token_2(
                uptoken,
                file.path,
@@ -138,7 +138,7 @@ module CarrierWave
         end
 
         def store(file)
-          qiniu_connection.store(file, @path)
+          qiniu_connection.store(file, @path, @uploader)
         end
 
         def delete
@@ -205,7 +205,9 @@ module CarrierWave
               :qiniu_callback_url  => @uploader.qiniu_callback_url,
               :qiniu_callback_body => @uploader.qiniu_callback_body,
               :qiniu_persistent_notify_url  => @uploader.qiniu_persistent_notify_url,
-              :qiniu_style_separator => @uploader.qiniu_style_separator
+              :qiniu_style_separator => @uploader.qiniu_style_separator,
+              # zhangle
+              :qiniu_x_vars         => @uploader.qiniu_x_vars
             }
 
             config[:qiniu_async_ops] = Array(@uploader.qiniu_async_ops).join(';') rescue ''
