@@ -47,9 +47,9 @@ module CarrierWave
           put_policy.persistent_notify_url = @qiniu_persistent_notify_url if @qiniu_persistent_notify_url.present?
 
           uptoken = ::Qiniu::Auth.generate_uptoken(put_policy)
-          qiniu_x_vars = {"x:board_id": file.model.id}
+          qiniu_x_vars = {"x:document_id": file.model.id}
           qiniu_x_vars.merge!(@qiniu_x_vars)
-          
+
           resp_code, resp_body, response_headers = ::Qiniu::Storage.upload_with_token_2(
                uptoken,
                file.path,
