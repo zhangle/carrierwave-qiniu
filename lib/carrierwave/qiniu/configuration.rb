@@ -24,6 +24,9 @@ module CarrierWave
         add_config :qiniu_style_inline
         add_config :qiniu_styles
 
+        # zhangle
+        add_config :qiniu_x_vars
+
         alias_config :qiniu_protocal, :qiniu_protocol
 
         reset_qiniu_config
@@ -44,6 +47,9 @@ module CarrierWave
             config.qiniu_persistent_notify_url = ''
             config.qiniu_style_separator = '-'
             config.qiniu_style_inline = false
+
+            # zhangle
+            config.qiniu_x_vars = nil
           end
         end
 

@@ -25,6 +25,9 @@ module CarrierWave
           @qiniu_callback_body          = options[:qiniu_callback_body] || ''
           @qiniu_persistent_notify_url  = options[:qiniu_persistent_notify_url] || ''
           @qiniu_style_separator        = options[:qiniu_style_separator] || '-'
+
+          # zhangle
+          @qiniu_x_vars                 = options[:qiniu_x_vars] || nil
           init
         end
 
@@ -43,14 +46,15 @@ module CarrierWave
           put_policy.callback_body         = @qiniu_callback_body if @qiniu_callback_body.present?
           put_policy.persistent_notify_url = @qiniu_persistent_notify_url if @qiniu_persistent_notify_url.present?
 
-          resp_code, resp_body, resp_headers =
-            ::Qiniu::Storage.upload_with_put_policy(
-              put_policy,
-              file.path,
-              key,
-              nil,
-              bucket: @qiniu_bucket
-            )
+          uptoken = ::Qiniu::Auth.generate_uptoken(put_policy)
+
+          resp_code, resp_body, response_headers = ::Qiniu::Storage.upload_with_token_2(
+               uptoken,
+               file.path,
+               key,
+               @qiniu_x_vars,
+               bucket: @qiniu_bucket
+          )
 
           if resp_code < 200 or resp_code >= 300
             raise ::CarrierWave::UploadError, "Upload failed, status code: #{resp_code}, response: #{resp_body}"
