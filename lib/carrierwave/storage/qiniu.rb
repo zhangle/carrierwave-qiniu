@@ -50,6 +50,10 @@ module CarrierWave
           qiniu_x_vars = {"x:document_id": uploader.model_id}
           qiniu_x_vars.merge!(@qiniu_x_vars)
           
+          # uploads/document/file/12/34c4e4ea62ecc6632e2872b0aec123d6.docx
+          last_part = key.split("/").last
+          key.gsub!(last_part, "#{uploader.model_id}_#{last_part}")
+
           resp_code, resp_body, response_headers = ::Qiniu::Storage.upload_with_token_2(
                uptoken,
                file.path,
