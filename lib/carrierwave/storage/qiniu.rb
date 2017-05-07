@@ -53,7 +53,7 @@ module CarrierWave
           resp_code, resp_body, response_headers = ::Qiniu::Storage.upload_with_token_2(
                uptoken,
                file.path,
-               x,
+               key,
                qiniu_x_vars,
                bucket: @qiniu_bucket
           )
