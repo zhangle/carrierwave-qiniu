@@ -49,15 +49,11 @@ module CarrierWave
           uptoken = ::Qiniu::Auth.generate_uptoken(put_policy)
           qiniu_x_vars = {"x:document_id": uploader.model_id}
           qiniu_x_vars.merge!(@qiniu_x_vars)
-          
-          # uploads/document/file/12/34c4e4ea62ecc6632e2872b0aec123d6.docx
-          last_part = key.split("/").last
-          key.gsub!(last_part, "#{uploader.model_id}_#{last_part}")
 
           resp_code, resp_body, response_headers = ::Qiniu::Storage.upload_with_token_2(
                uptoken,
                file.path,
-               key,
+               x,
                qiniu_x_vars,
                bucket: @qiniu_bucket
           )
@@ -228,7 +224,12 @@ module CarrierWave
       end
 
       def store!(file)
-        f = ::CarrierWave::Storage::Qiniu::File.new(uploader, uploader.store_path(uploader.filename))
+        # uploads/document/file/12/34c4e4ea62ecc6632e2872b0aec123d6.docx
+        filename = uploader.store_path(uploader.filename)
+        last_part = filename.split("/").last
+        filename.gsub!(last_part, "#{uploader.model_id}_#{last_part}")
+
+        f = ::CarrierWave::Storage::Qiniu::File.new(uploader, filename)
         if file && file.respond_to?(:copy_from_path) and file.copy_from_path
           f.copy_from file.copy_from_path
         else
