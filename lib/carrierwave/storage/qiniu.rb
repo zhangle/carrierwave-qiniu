@@ -227,7 +227,7 @@ module CarrierWave
         # uploads/document/file/12/34c4e4ea62ecc6632e2872b0aec123d6.docx
         filename = uploader.store_path(uploader.filename)
         last_part = filename.split("/").last
-        filename.gsub!(last_part, "#{uploader.model_id}.#{last_part}")
+        filename.gsub!(last_part, "#{uploader.model_id}0000#{last_part}")
 
         f = ::CarrierWave::Storage::Qiniu::File.new(uploader, filename)
         if file && file.respond_to?(:copy_from_path) and file.copy_from_path
