@@ -48,7 +48,10 @@ module CarrierWave
 
           uptoken = ::Qiniu::Auth.generate_uptoken(put_policy)
           qiniu_x_vars = {"x:document_id": uploader.model_id}
-          qiniu_x_vars.merge!(@qiniu_x_vars)
+
+          unless @qiniu_x_vars.nil?
+            qiniu_x_vars.merge!(@qiniu_x_vars)
+          end
 
           resp_code, resp_body, response_headers = ::Qiniu::Storage.upload_with_token_2(
                uptoken,
